@@ -17,10 +17,10 @@
       --bg-card: rgba(10, 13, 24, 0.96);
       --accent-1: #ffb347;
       --accent-2: #ff6b6b;
-      --accent-soft: #302b63;
+      --accent-3: #4facfe;
       --text-main: #f5f5f5;
       --text-soft: #c3c7e5;
-      --border-soft: rgba(255, 255, 255, 0.06);
+      --border-soft: rgba(255, 255, 255, 0.08);
       --radius-xl: 24px;
       --shadow-heavy: 0 26px 80px rgba(0, 0, 0, 0.85);
       --transition-fast: 0.25s ease;
@@ -32,11 +32,9 @@
 
     body {
       font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: radial-gradient(circle at top, #151a28 0, #050712 45%, #000000 100%);
+      background: radial-gradient(circle at top, #171b2b 0, #050712 45%, #000000 100%);
       color: var(--text-main);
       min-height: 100vh;
-      margin: 0;
-      padding: 0;
       overflow-x: hidden;
     }
 
@@ -45,7 +43,7 @@
       position: fixed;
       inset: 0;
       overflow: hidden;
-      z-index: -2;
+      z-index: -3;
       pointer-events: none;
     }
 
@@ -84,25 +82,73 @@
       100% { transform: translate3d(-40px, 20px, 0) scale(1.05); }
     }
 
-    /* ---------- Layout ---------- */
+    /* ---------- Layout wrapper with animated frame ---------- */
+    .frame-wrap {
+      position: relative;
+      max-width: 1120px;
+      margin: 16px auto 40px;
+      padding: 1px;
+      border-radius: calc(var(--radius-xl) + 8px);
+      background:
+        linear-gradient(135deg, rgba(255, 179, 71, 0.12), rgba(79, 172, 254, 0.05)),
+        radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.12), transparent 55%);
+      overflow: visible;
+      isolation: isolate;
+    }
+
+    .frame-wrap::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      background: conic-gradient(
+        from 180deg,
+        rgba(255, 179, 71, 0.8),
+        rgba(79, 172, 254, 0.6),
+        rgba(255, 107, 107, 0.9),
+        rgba(255, 179, 71, 0.8)
+      );
+      opacity: 0.18;
+      filter: blur(6px);
+      z-index: -1;
+      animation: frame-spin 18s linear infinite;
+    }
+
+    @keyframes frame-spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     .page {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 20px 16px 60px;
+      border-radius: var(--radius-xl);
+      background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.04), transparent 55%),
+                  rgba(4, 6, 16, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      box-shadow: var(--shadow-heavy);
+      padding: 16px 16px 46px;
     }
 
     @media (min-width: 900px) {
       .page {
-        padding: 26px 12px 80px;
+        padding: 18px 26px 54px;
       }
     }
 
-    /* ---------- Navbar ---------- */
+    /* ---------- Sticky Navbar ---------- */
     .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: linear-gradient(to bottom, rgba(4, 6, 16, 0.96), rgba(4, 6, 16, 0.82));
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 8px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
       margin-bottom: 18px;
     }
 
@@ -131,29 +177,65 @@
       font-size: 0.75rem;
       text-transform: uppercase;
       color: #c3c7e5;
+      white-space: nowrap;
     }
 
     .nav-links {
       display: flex;
-      gap: 10px;
+      gap: 4px;
       font-size: 0.78rem;
+      position: relative;
+      padding: 4px;
+      border-radius: 999px;
+      background: rgba(8, 11, 26, 0.95);
     }
 
     .nav-link {
+      position: relative;
       text-decoration: none;
       color: #d9ddff;
       padding: 6px 10px;
       border-radius: 999px;
       border: 1px solid transparent;
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(8px);
-      transition: background var(--transition-fast), border-color var(--transition-fast), transform 0.2s ease;
+      z-index: 2;
+      transition: color var(--transition-fast);
+      white-space: nowrap;
     }
 
     .nav-link:hover {
-      background: rgba(255, 255, 255, 0.09);
-      border-color: rgba(255, 189, 89, 0.7);
-      transform: translateY(-1px);
+      color: #ffffff;
+    }
+
+    .nav-pill {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      border-radius: 999px;
+      background: linear-gradient(130deg, rgba(255, 179, 71, 0.4), rgba(79, 172, 254, 0.5));
+      z-index: 1;
+      transition: transform 0.25s ease, width 0.25s ease, opacity 0.25s ease;
+      opacity: 0.2;
+    }
+
+    .nav-link.active {
+      color: #111214;
+      font-weight: 500;
+    }
+
+    .nav-link.active + .nav-pill {
+      opacity: 0.55;
+    }
+
+    @media (max-width: 720px) {
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .nav-links {
+        width: 100%;
+        justify-content: space-between;
+        overflow-x: auto;
+      }
     }
 
     /* ---------- Hero ---------- */
@@ -167,7 +249,7 @@
 
     @media (min-width: 900px) {
       .hero {
-        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
+        grid-template-columns: minmax(0, 1.45fr) minmax(0, 1.05fr);
         align-items: center;
       }
     }
@@ -188,7 +270,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(120deg, rgba(255, 255, 255, 0.15), transparent 50%);
+      background: linear-gradient(120deg, rgba(255, 255, 255, 0.18), transparent 50%);
       opacity: 0;
       pointer-events: none;
       transform: translateX(-40%);
@@ -209,7 +291,7 @@
     }
 
     .hero-title {
-      font-size: 2.2rem;
+      font-size: 2.1rem;
       line-height: 1.15;
       margin-bottom: 10px;
     }
@@ -220,10 +302,21 @@
       color: transparent;
     }
 
+    .hero-type {
+      display: inline-block;
+      border-right: 2px solid rgba(255, 255, 255, 0.7);
+      padding-right: 4px;
+      margin-top: 4px;
+      font-size: 0.96rem;
+      color: #c3c7e5;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
     .hero-subline {
       font-size: 0.96rem;
       color: #c3c7e5;
-      margin-bottom: 14px;
+      margin: 12px 0 14px;
     }
 
     .hero-subline strong {
@@ -289,7 +382,7 @@
       transform: translateY(-1px);
     }
 
-    /* Hero side card */
+    /* Hero side card (3D tilt) */
     .hero-card {
       margin: 0 auto;
       max-width: 360px;
@@ -302,7 +395,7 @@
       position: relative;
       overflow: hidden;
       transform-style: preserve-3d;
-      transition: transform 0.18s ease-out;
+      transition: transform 0.18s ease-out, box-shadow 0.2s ease-out;
     }
 
     .hero-card::before {
@@ -325,8 +418,8 @@
     }
 
     .hero-avatar {
-      width: 70px;
-      height: 86px;
+      width: 72px;
+      height: 88px;
       border-radius: 18px;
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -555,20 +648,21 @@
       border: 1px solid rgba(255, 255, 255, 0.18);
       color: #e5e7ff;
       background: rgba(255, 255, 255, 0.03);
-      transition: background var(--transition-fast), transform 0.18s ease, border-color var(--transition-fast);
+      transition: background var(--transition-fast), transform 0.18s ease, border-color var(--transition-fast), box-shadow 0.18s ease;
     }
 
     .social-link:hover {
       background: rgba(255, 255, 255, 0.09);
       border-color: rgba(255, 189, 89, 0.8);
       transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7);
     }
 
     /* ---------- Footer ---------- */
     .footer {
-      max-width: 1080px;
-      margin: 22px auto 30px;
-      padding: 0 18px;
+      max-width: 1120px;
+      margin: 0 auto 26px;
+      padding: 0 10px;
       font-size: 0.78rem;
       color: #9ea3c4;
       display: flex;
@@ -598,206 +692,213 @@
     <div class="bg-blob"></div>
   </div>
 
-  <div class="page">
-    <!-- Navbar -->
-    <header class="nav">
-      <div class="nav-left">
-        <div class="nav-logo">T</div>
-        <div class="nav-title">Tanim • Portfolio</div>
-      </div>
-      <nav class="nav-links">
-        <a href="#about" class="nav-link">About</a>
-        <a href="#skills" class="nav-link">Skills</a>
-        <a href="#gallery" class="nav-link">Gallery</a>
-        <a href="#contact" class="nav-link">Contact</a>
-      </nav>
-    </header>
-
-    <!-- Hero -->
-    <section class="hero reveal" id="top">
-      <div class="hero-text">
-        <div class="hero-kicker">Sunset Rider • Dream Chaser</div>
-        <h1 class="hero-title">
-          Building a <span>better future</span><br />
-          one quiet sunset at a time.
-        </h1>
-        <p class="hero-subline">
-          I like <strong>calm places</strong>, <strong>deep thoughts</strong>, crypto charts and long rides near the sea.
-          I don’t talk too much, but I notice everything.
-        </p>
-        <div class="hero-tags">
-          <span class="hero-tag">Sunsets &amp; Sea Waves</span>
-          <span class="hero-tag">Low-key Lifestyle</span>
-          <span class="hero-tag">Crypto Scalper</span>
-          <span class="hero-tag">Digital Learner</span>
+  <div class="frame-wrap">
+    <div class="page">
+      <!-- Navbar -->
+      <header class="nav">
+        <div class="nav-left">
+          <div class="nav-logo">T</div>
+          <div class="nav-title">Tanim • Portfolio</div>
         </div>
-        <div class="hero-buttons">
-          <button class="btn btn-primary" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">
-            View My Vibes
-          </button>
-          <button class="btn btn-ghost" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
-            Know More About Me
-          </button>
-        </div>
-      </div>
+        <nav class="nav-links" id="navLinks">
+          <a href="#about" class="nav-link" data-target="about">About</a>
+          <a href="#skills" class="nav-link" data-target="skills">Skills</a>
+          <a href="#gallery" class="nav-link" data-target="gallery">Gallery</a>
+          <a href="#contact" class="nav-link" data-target="contact">Contact</a>
+          <div class="nav-pill" id="navPill"></div>
+        </nav>
+      </header>
 
-      <aside class="hero-card" id="heroCard">
-        <div class="hero-card-top">
-          <div class="hero-avatar">
-            <img src="images/profile-1.jpg" alt="Tanim portrait" />
+      <!-- Hero -->
+      <section class="hero reveal" id="top" data-section="top">
+        <div class="hero-text">
+          <div class="hero-kicker">Sunset Rider • Dream Chaser</div>
+          <h1 class="hero-title">
+            Building a <span>better future</span><br />
+            one quiet sunset at a time.
+          </h1>
+          <div class="hero-type" id="heroType"></div>
+          <p class="hero-subline">
+            I like <strong>calm places</strong>, <strong>deep thoughts</strong>, crypto charts and long rides near the sea.
+            I don’t talk too much, but I notice everything.
+          </p>
+          <div class="hero-tags">
+            <span class="hero-tag">Sunsets &amp; Sea Waves</span>
+            <span class="hero-tag">Low-key Lifestyle</span>
+            <span class="hero-tag">Crypto Scalper</span>
+            <span class="hero-tag">Digital Learner</span>
           </div>
-          <div class="hero-card-meta">
-            <h3>Tanim</h3>
-            <p>Sunset rider • Chill mind • Focused on growth</p>
-            <div class="hero-pill">
-              <span>●</span>
-              <span>Currently leveling up in silence</span>
+          <div class="hero-buttons">
+            <button class="btn btn-primary" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">
+              View My Vibes
+            </button>
+            <button class="btn btn-ghost" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
+              Know More About Me
+            </button>
+          </div>
+        </div>
+
+        <aside class="hero-card" id="heroCard">
+          <div class="hero-card-top">
+            <div class="hero-avatar">
+              <img src="images/profile-1.jpg" alt="Tanim portrait" />
+            </div>
+            <div class="hero-card-meta">
+              <h3>Tanim</h3>
+              <p>Sunset rider • Chill mind • Focused on growth</p>
+              <div class="hero-pill">
+                <span>●</span>
+                <span>Currently leveling up in silence</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="hero-card-stats">
-          <div class="stat">
-            <small>Core Vibes</small>
-            Peace, loyalty, growth,<br />and long rides.
+          <div class="hero-card-stats">
+            <div class="stat">
+              <small>Core Vibes</small>
+              Peace, loyalty, growth,<br />and long rides.
+            </div>
+            <div class="stat">
+              <small>Digital Side</small>
+              Crypto trading, web<br />&amp; automation.
+            </div>
           </div>
-          <div class="stat">
-            <small>Digital Side</small>
-            Crypto trading, web<br />&amp; automation.
+          <div class="hero-card-footer">
+            Not a loud person. More of a “watch, learn and move smart” type.
           </div>
+        </aside>
+      </section>
+
+      <!-- About -->
+      <section class="section reveal" id="about" data-section="about">
+        <div class="section-header">
+          <h2 class="section-title">About Me</h2>
+          <div class="section-tag">Who I Am</div>
         </div>
-        <div class="hero-card-footer">
-          Not a loud person. More of a “watch, learn and move smart” type.
+        <p>
+          I’m <strong>Tanim</strong>. I enjoy calm places, late-evening rides and the sound of waves more than crowded
+          noise. Most of the time I’m either thinking about my next move in life, learning something new, or planning
+          how to level up my skills and lifestyle.
+        </p>
+        <p>
+          I prefer real vibes over fake attention and care more about loyalty, respect and growth than showing off.
+          I don’t talk a lot, but I notice everything and remember what matters.
+        </p>
+        <ul>
+          <li>Location: Bangladesh</li>
+          <li>Vibes: Sunset, sea, bike &amp; deep thoughts</li>
+          <li>Personality: Chill, observant, keeps circle small</li>
+          <li>Goal: Better life, better mindset, better future</li>
+        </ul>
+      </section>
+
+      <!-- Skills / What I Do -->
+      <section class="section reveal" id="skills" data-section="skills">
+        <div class="section-header">
+          <h2 class="section-title">What I Do &amp; My Skills</h2>
+          <div class="section-tag">Focus &amp; Growth</div>
         </div>
-      </aside>
-    </section>
+        <p>
+          I like building and experimenting with things on the internet. Right now I’m exploring a mix of tech,
+          trading and personal development.
+        </p>
+        <ul>
+          <li>Creating and hosting clean portfolio sites using HTML, CSS &amp; GitHub Pages</li>
+          <li>Exploring automation and Telegram/online tools step by step</li>
+          <li>Crypto trading experience, especially scalping and BTC-focused setups</li>
+          <li>Good eye for aesthetic photos, captions and overall digital vibe</li>
+          <li>Fast learner: I can pick up new tools and platforms quickly</li>
+          <li>Calm decision-making under pressure (comes from trading experience)</li>
+          <li>Discipline and self-improvement mindset: trying to upgrade myself daily</li>
+        </ul>
+      </section>
 
-    <!-- About -->
-    <section class="section reveal" id="about">
-      <div class="section-header">
-        <h2 class="section-title">About Me</h2>
-        <div class="section-tag">Who I Am</div>
-      </div>
-      <p>
-        I’m <strong>Tanim</strong>. I enjoy calm places, late-evening rides and the sound of waves more than crowded
-        noise. Most of the time I’m either thinking about my next move in life, learning something new, or planning
-        how to level up my skills and lifestyle.
-      </p>
-      <p>
-        I prefer real vibes over fake attention and care more about loyalty, respect and growth than showing off.
-        I don’t talk a lot, but I notice everything and remember what matters.
-      </p>
-      <ul>
-        <li>Location: Bangladesh</li>
-        <li>Vibes: Sunset, sea, bike &amp; deep thoughts</li>
-        <li>Personality: Chill, observant, keeps circle small</li>
-        <li>Goal: Better life, better mindset, better future</li>
-      </ul>
-    </section>
+      <!-- Gallery -->
+      <section class="section reveal" id="gallery" data-section="gallery">
+        <div class="section-header">
+          <h2 class="section-title">Photo Gallery</h2>
+          <div class="section-tag">Photo Numbers Included</div>
+        </div>
+        <p>
+          Some moments that match my energy. নিচের label এ <strong>Photo 1, 2, 3, 4</strong> লেখা আছে – এগুলা দেখে
+          তুমি সহজে বুঝবে কোন ফাইল কোন vibe এর, আর GitHub এ নাম manage করতেও সুবিধা হবে।
+        </p>
 
-    <!-- Skills / What I Do -->
-    <section class="section reveal" id="skills">
-      <div class="section-header">
-        <h2 class="section-title">What I Do &amp; My Skills</h2>
-        <div class="section-tag">Focus & Growth</div>
-      </div>
-      <p>
-        I like building and experimenting with things on the internet. Right now I’m exploring a mix of tech,
-        trading and personal development.
-      </p>
-      <ul>
-        <li>Creating and hosting clean portfolio sites using HTML, CSS &amp; GitHub Pages</li>
-        <li>Exploring automation and Telegram/online tools step by step</li>
-        <li>Crypto trading experience, especially scalping and BTC-focused setups</li>
-        <li>Good eye for aesthetic photos, captions and overall digital vibe</li>
-        <li>Fast learner: I can pick up new tools and platforms quickly</li>
-        <li>Calm decision-making under pressure (comes from trading experience)</li>
-        <li>Discipline and self-improvement mindset: trying to upgrade myself daily</li>
-      </ul>
-    </section>
+        <div class="gallery-grid">
+          <figure class="gallery-item">
+            <img src="images/sunset-bike.jpg" alt="Tanim with bike watching sunset" />
+            <figcaption class="gallery-label">
+              <strong>Photo 1</strong>
+              <span>Sunset ride • Peace moment</span>
+            </figcaption>
+          </figure>
 
-    <!-- Gallery -->
-    <section class="section reveal" id="gallery">
-      <div class="section-header">
-        <h2 class="section-title">Photo Gallery</h2>
-        <div class="section-tag">Photo Numbers Included</div>
-      </div>
-      <p>
-        Some moments that match my energy. 
+          <figure class="gallery-item">
+            <img src="images/mirror-style.jpg" alt="Tanim mirror selfie casual outfit" />
+            <figcaption class="gallery-label">
+              <strong>Photo 2</strong>
+              <span>Casual day • Clean vibes</span>
+            </figcaption>
+          </figure>
 
-      <div class="gallery-grid">
-        <figure class="gallery-item">
-          <img src="images/sunset-bike.jpg" alt="Tanim with bike watching sunset" />
-          <figcaption class="gallery-label">
-            <strong>Photo 1</strong>
-            <span>Sunset ride • Peace moment</span>
-          </figcaption>
-        </figure>
+          <figure class="gallery-item">
+            <img src="images/sunset-silhouette.jpg" alt="Tanim standing at the beach in sunset silhouette" />
+            <figcaption class="gallery-label">
+              <strong>Photo 3</strong>
+              <span>Golden hour • Reflection</span>
+            </figcaption>
+          </figure>
 
-        <figure class="gallery-item">
-          <img src="images/mirror-style.jpg" alt="Tanim mirror selfie casual outfit" />
-          <figcaption class="gallery-label">
-            <strong>Photo 2</strong>
-            <span>Casual day • Clean vibes</span>
-          </figcaption>
-        </figure>
+          <figure class="gallery-item">
+            <img src="images/profile-1.jpg" alt="Tanim close mirror shot" />
+            <figcaption class="gallery-label">
+              <strong>Photo 4</strong>
+              <span>Low-key • Face hidden</span>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
 
-        <figure class="gallery-item">
-          <img src="images/sunset-silhouette.jpg" alt="Tanim standing at the beach in sunset silhouette" />
-          <figcaption class="gallery-label">
-            <strong>Photo 3</strong>
-            <span>Golden hour • Reflection</span>
-          </figcaption>
-        </figure>
+      <!-- Contact / socials -->
+      <section class="section reveal" id="contact" data-section="contact">
+        <div class="section-header">
+          <h2 class="section-title">Connect With Me</h2>
+          <div class="section-tag">Social Links</div>
+        </div>
+        <p>
+          If you know me personally, you already know where to find me. Otherwise, these links are enough. 🙂
+        </p>
+        <div class="socials">
+          <!-- Facebook -->
+          <a
+            class="social-link"
+            href="https://www.facebook.com/anonymousfakehaha"
+            target="_blank"
+            rel="noopener"
+          >
+            Facebook
+          </a>
 
-        <figure class="gallery-item">
-          <img src="images/profile-1.jpg" alt="Tanim close mirror shot" />
-          <figcaption class="gallery-label">
-            <strong>Photo 4</strong>
-            <span>Low-key • Face hidden</span>
-          </figcaption>
-        </figure>
-      </div>
-    </section>
+          <!-- Telegram -->
+          <a
+            class="social-link"
+            href="https://t.me/EScrowBlackhatmasters"
+            target="_blank"
+            rel="noopener"
+          >
+            Telegram
+          </a>
 
-        <!-- Contact / socials -->
-    <section class="section reveal" id="contact">
-      <div class="section-header">
-        <h2 class="section-title">Connect With Me</h2>
-        <div class="section-tag">Social Links</div>
-      </div>
-      <p>
-        If you know me personally, you already know where to find me. Otherwise, these links are enough. 🙂
-      </p>
-      <div class="socials">
-        <!-- Facebook -->
-        <a
-          class="social-link"
-          href="https://www.facebook.com/anonymousfakehaha"
-          target="_blank"
-          rel="noopener"
-        >
-          Facebook
-        </a>
-
-        <!-- Telegram -->
-        <a
-          class="social-link"
-          href="https://t.me/EScrowBlackhatmasters"
-          target="_blank"
-          rel="noopener"
-        >
-          Telegram
-        </a>
-
-        <!-- Email -->
-        <a
-          class="social-link"
-          href="mailto:tanimtanmimtanim@gmail.com"
-        >
-          Email Me
-        </a>
-      </div>
-    </section>
+          <!-- Email -->
+          <a
+            class="social-link"
+            href="mailto:tanimtanmimtanim@gmail.com"
+          >
+            Email Me
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
 
   <footer class="footer">
     <span>© 2025 Tanim. All rights reserved.</span>
@@ -818,7 +919,6 @@
       },
       { threshold: 0.15 }
     );
-
     reveals.forEach((el) => observer.observe(el));
 
     // Simple 3D tilt for hero card
@@ -828,15 +928,97 @@
         const rect = heroCard.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        const rotateY = ((x / rect.width) - 0.5) * 10; // -5 to 5
-        const rotateX = ((y / rect.height) - 0.5) * -10; // -5 to 5
+        const rotateY = ((x / rect.width) - 0.5) * 10;
+        const rotateX = ((y / rect.height) - 0.5) * -10;
         heroCard.style.transform = `perspective(700px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        heroCard.style.boxShadow = "0 26px 80px rgba(0, 0, 0, 0.95)";
       });
 
       heroCard.addEventListener("mouseleave", () => {
         heroCard.style.transform = "perspective(700px) rotateX(0deg) rotateY(0deg)";
+        heroCard.style.boxShadow = "0 26px 80px rgba(0, 0, 0, 0.85)";
       });
     }
+
+    // Typewriter text
+    const heroTypeEl = document.getElementById("heroType");
+    const typeLines = [
+      "Staying low-key. Working on myself.",
+      "Silent moves. Visible results.",
+      "Sunsets, sea waves & smart decisions."
+    ];
+    let lineIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+
+    function typeLoop() {
+      if (!heroTypeEl) return;
+      const current = typeLines[lineIndex];
+
+      if (!deleting) {
+        heroTypeEl.textContent = current.slice(0, charIndex + 1);
+        charIndex++;
+        if (charIndex === current.length) {
+          deleting = true;
+          setTimeout(typeLoop, 1400);
+          return;
+        }
+      } else {
+        heroTypeEl.textContent = current.slice(0, charIndex - 1);
+        charIndex--;
+        if (charIndex === 0) {
+          deleting = false;
+          lineIndex = (lineIndex + 1) % typeLines.length;
+        }
+      }
+      const delay = deleting ? 40 : 70;
+      setTimeout(typeLoop, delay);
+    }
+    if (heroTypeEl) typeLoop();
+
+    // Nav active indicator
+    const sections = document.querySelectorAll("[data-section]");
+    const navLinks = document.querySelectorAll(".nav-link");
+    const navPill = document.getElementById("navPill");
+
+    function updateNavOnScroll() {
+      let current = "top";
+      sections.forEach((section) => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= 120 && rect.bottom >= 160) {
+          current = section.getAttribute("data-section");
+        }
+      });
+
+      navLinks.forEach((link) => {
+        if (link.dataset.target === current) {
+          link.classList.add("active");
+          const rect = link.getBoundingClientRect();
+          const parentRect = link.parentElement.getBoundingClientRect();
+          if (navPill) {
+            navPill.style.width = rect.width + "px";
+            navPill.style.transform = `translateX(${rect.left - parentRect.left}px)`;
+            navPill.style.opacity = 0.55;
+          }
+        } else {
+          link.classList.remove("active");
+        }
+      });
+    }
+
+    window.addEventListener("scroll", updateNavOnScroll);
+    window.addEventListener("load", () => {
+      updateNavOnScroll();
+      // Initial pill under About
+      const active = document.querySelector(".nav-link[data-target='about']");
+      if (active && navPill) {
+        const rect = active.getBoundingClientRect();
+        const parentRect = active.parentElement.getBoundingClientRect();
+        navPill.style.width = rect.width + "px";
+        navPill.style.transform = `translateX(${rect.left - parentRect.left}px)`;
+        navPill.style.opacity = 0.55;
+      }
+    });
   </script>
 </body>
 </html>
